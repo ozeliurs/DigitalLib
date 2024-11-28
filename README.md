@@ -243,3 +243,12 @@ As the tokens are given when creating the upload block, a user could create a fa
 ### Double Leeching
 
 When the user makes a download request, the server allows anyone with the torrent file to download it. Nothing stops a user from downloading the file and then sharing the torrent with others, allowing them to download the file without paying.
+
+### Paypal Time Correlation
+
+It's possible to deanonymize a user by correlating the timestamps of the ledger transactions with the timestamps of the Paypal transactions.
+
+### Seeding Time Correlation
+
+It's possible to find a user's IP by looking at the IP of the seeders when the upload block is created.
+Some of this attack can be mitigated by using a VPN / Tor.
