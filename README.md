@@ -5,7 +5,19 @@ This is the Proposed Architecture for the Peer to Peer exam for a Digital Librar
 ## Architecture Diagram
 
 ```mermaid
-
+graph TD
+    A[User] -->|Register| B[User Backend]
+    A -->|Search| C[File Backend]
+    A -->|Download| C
+    A -->|Upload| C
+    B -->|Ledger Update| D[Ledger]
+    C -->|Ledger Update| D
+    A -->|Buy/Sell Tokens| E[Billing Server]
+    E -->|Process Payment| F[Paypal]
+    E -->|Ledger Update| D
+    A -->|Request File Access| G[Private Tracker Server]
+    G -->|Verify Purchase| D
+    G -->|Grant Access| A
 ```
 
 ## Api Spec
@@ -131,6 +143,10 @@ The response is a torrent file configured to use the private bitorrent tracker w
 
 ## Ledger Spec
 
+- **Upload Block**: Contains file hash, user's public key, and file size.
+- **Download Block**: Contains file hash and user's public key.
+- **Buy/Sell Block**: Contains transaction details and user's public key.
+
 We introduce a Ledger to the system to keep track of the download/upload ratio of each user. When registering a user, the user's public key is stored in the ledger with 0 tokens (upload/download ratio of 0).
 
 When the user makes an upload request, we store a new **upload** block containing the file hash, the user's public key and the size of the file. The Ledger will then update the user's account with the number of tokens equal to the size of the file.
@@ -217,3 +233,13 @@ We issue a simple HTTPS certificate to all the backends as is is the only connec
 Wa can use the Synapse protocol to interconnect Bitorrent Libraries. We can then allow the user to transfer coins from a blockchain to another blockchain.
 
 ## Possible Attacks
+
+This proposal is not perfect and has some possible attacks.
+
+### Fake Upload
+
+As the tokens are given when creating the upload block, a user could create a fake upload file and nobody would download it, making the user gain tokens for free.
+
+### Double Leeching
+
+When the user makes a download request, the server allows anyone with the torrent file to download it. Nothing stops a user from downloading the file and then sharing the torrent with others, allowing them to download the file without paying.
